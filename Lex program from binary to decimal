@@ -1,0 +1,44 @@
+%{
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+
+int decimal = 0;  // Variable to store the decimal result
+int length = 0;   // Variable to track the position of the current binary digit
+%}
+
+%%
+[01] {
+    // If the character is '0' or '1', update the decimal value
+    decimal = decimal * 2 + (yytext[0] - '0');
+    length++;  // Increment length for each binary digit
+}
+
+\n { 
+    // When a newline is encountered, print the decimal result
+    printf("Decimal equivalent: %d\n", decimal);
+    decimal = 0;  // Reset for next input
+    length = 0;   // Reset for next input
+}
+
+[ \t] ;  // Ignore spaces and tabs
+
+. { 
+    // Ignore any other characters
+}
+
+%%
+
+int main() {
+    printf("Enter a binary number: ");
+    yylex();  // Start the Lex scanner to process the input
+    return 0;
+}
+
+ Compile and Run:
+lex binary_to_decimal.l  # Generate the C source code
+gcc lex.yy.c -o binary_to_decimal  # Compile the program
+./binary_to_decimal  # Run the program
+
+Enter a binary number: 1101
+Decimal equivalent: 13
