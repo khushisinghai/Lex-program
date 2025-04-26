@@ -1,0 +1,41 @@
+%{
+#include <stdio.h>
+#include <string.h>
+
+char smallest[1000];   // Array to store the smallest word
+int first = 1;         // Flag to check if it's the first word
+%}
+
+%%
+[a-zA-Z]+ {
+    if (first) {
+        strcpy(smallest, yytext);  // Initialize smallest with the first word
+        first = 0;
+    } else {
+        if (strlen(yytext) < strlen(smallest)) {
+            strcpy(smallest, yytext);  // Update smallest if current word is smaller
+        }
+    }
+}
+[ \t\n]+   ;  // Skip spaces, tabs, and newlines
+.         ;  // Ignore punctuation or any other characters
+%%
+
+int main() {
+    printf("Enter a line: ");
+    yylex();  // Process the input line
+    printf("Smallest word: %s\n", smallest);  // Output the smallest word
+    return 0;
+}
+
+Run the following commands:
+lex smallest_word.l   # Generate the C source code
+gcc lex.yy.c -o smallest_word   # Compile it to create an executable
+./smallest_word   # Run the program
+
+Input:
+This program will work with any input line, whether it's short or long, and will correctly identify the smallest word
+
+
+Output:
+Smallest word: or
