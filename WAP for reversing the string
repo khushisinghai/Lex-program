@@ -1,0 +1,31 @@
+%{
+#include <stdio.h>
+#include <string.h>
+%}
+
+%%
+[a-zA-Z0-9 ]+  {
+                 int len = strlen(yytext);
+                 for(int i = len - 1; i >= 0; i--) {
+                     printf("%c", yytext[i]);
+                 }
+                 printf("\n");
+               }
+.              ;
+%%
+
+int main() {
+    printf("Enter a string to reverse: ");
+    yylex();
+    return 0;
+}
+
+ompile and run:
+lex reverse.l
+gcc lex.yy.c -o reverse
+./reverse
+
+enter a string like
+khushi 
+Output will be:
+ ihsuhk
