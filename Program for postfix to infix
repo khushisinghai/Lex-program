@@ -1,0 +1,107 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 100
+char stack[MAX][MAX];
+int top = -1;
+
+void push(char* value) {
+    if (top < MAX - 1) {
+        top++;
+        strcpy(stack[top], value);
+    } else {
+        printf("Stack Overflow\n");
+    }
+}
+
+char* pop() {
+    if (top == -1) {
+        return NULL;  // Stack is empty
+    } else {
+        return stack[top--];
+    }
+}
+
+void reverse_and_print(char* str) {
+    int len = strlen(str);
+    for (int i = len - 1; i >= 0; i--) {
+        printf("%c", str[i]);
+    }
+}
+
+void postfix_to_prefix() {
+    char op2[MAX], op1[MAX], result[MAX], operator[MAX];
+    
+    while (top != -1) {
+        // Pop two operands from stack
+        strcpy(op2, pop());
+        strcpy(op1, pop());
+        
+        // Pop the operator
+        strcpy(operator, pop());
+        
+        // Construct the prefix expression
+        snprintf(result, sizeof(result), "%s%s%s", operator, op1, op2);
+        
+        // Push the result back to stack
+        push(result);
+    }
+    // The final element is the prefix expression
+    printf("Prefix Expression: %s\n", stack[top]);
+}
+
+%}
+
+%%
+
+[a-zA-Z0-9]+ { 
+                // Operand (could be variables or numbers)
+                push(yytext);
+            }
+
+[+\-*/^] { 
+                // Operator
+                char operator[2] = {yytext[0], '\0'};
+                
+                // Pop two operands and apply operator
+                char op2[MAX], op1[MAX], result[MAX];
+                strcpy(op2, pop());
+                strcpy(op1, pop());
+                
+                // Construct the prefix expression
+                snprintf(result, sizeof(result), "%s%s%s", operator, op1, op2);
+                
+                // Push the result back to stack
+                push(result);
+            }
+
+\n|\r|\t|[ ]+ { 
+                // Ignore spaces, newlines, or tabs
+            }
+
+. { 
+                // Ignore any other characters
+            }
+
+%%
+
+int main() {
+    char expr[MAX];
+    printf("Enter postfix expression: ");
+    fgets(expr, sizeof(expr), stdin);  // Read input
+    yylex();
+    
+    // Convert postfix to prefix
+    postfix_to_prefix();
+    
+    return 0;
+}
+
+
+Enter a postfix expression :
+Enter postfix expression: ab+c*d+
+
+Output:
+Prefix Expression: ++a*bcd
